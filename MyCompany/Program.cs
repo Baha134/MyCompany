@@ -97,6 +97,26 @@ namespace MyCompany
             //регистрируем нужные маршруты
             app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 
+            // Создаём администратора при первом запуске
+            using (var scope = app.Services.CreateScope())
+            {
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                if (!await roleManager.RoleExistsAsync("admin"))
+                    await roleManager.CreateAsync(new IdentityRole("admin"));
+
+                string adminEmail = "admin@mail.com";
+                string adminPassword = "admin123";
+
+                if (await userManager.FindByEmailAsync(adminEmail) == null)
+                {
+                    IdentityUser admin = new IdentityUser { UserName = adminEmail, Email = adminEmail };
+                    await userManager.CreateAsync(admin, adminPassword);
+                    await userManager.AddToRoleAsync(admin, "admin");
+                }
+            }
+
             await app.RunAsync();
         }
     }
