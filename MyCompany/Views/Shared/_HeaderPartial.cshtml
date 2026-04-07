@@ -1,0 +1,19 @@
+﻿@inject IConfiguration config
+
+<div id="header-wrapper">
+    <div class="container">
+        <header id="header">
+            <div class="inner">
+
+                <h1>
+                    <a asp-area="" asp-controller="Home" asp-action="Index" id="logo">
+                        @config["Project:Company:CompanyName"]
+                    </a>
+                </h1>
+
+                @(await Component.InvokeAsync<MenuViewComponent>())
+
+            </div>
+        </header>
+    </div>
+</div>
